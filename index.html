@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suara Empati — Platform Kolektif Etika Kemanusiaan Bangsa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 50%, #f3e5f5 100%);
+            --mint: #b9f2e1;
+            --purple-pastel: #d7c4ff;
+            --pink-pastel: #ffc4d6;
+            --yellow-pastel: #ffeeb3;
+            --blue-pastel: #c4e0e5;
+            --text-dark: #3a2e5d;
+            --text-muted: #6a5d93;
+            --white: #ffffff;
+            --border-color: #4a3b70;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Quicksand', sans-serif; }
+        h1, h2, h3, h4, .logo, .tab-btn { font-family: 'Fredoka', sans-serif; color: var(--text-dark); }
+        
+        body { background: var(--bg-gradient); color: var(--text-dark); min-height: 100vh; padding-bottom: 50px; }
+
+        /* Navbar Layout */
+        nav { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 5%; background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 1000;
+            border-bottom: 3px solid var(--border-color);
+        }
+        .logo { font-size: 26px; font-weight: 700; }
+        .logo span { color: #845ef7; }
+        
+        nav ul { display: flex; list-style: none; gap: 12px; }
+        nav ul li button { 
+            background: var(--white); border: 2px solid var(--border-color); 
+            color: var(--text-dark); font-size: 14px; font-weight: 600; 
+            padding: 10px 20px; border-radius: 20px; cursor: pointer; 
+            box-shadow: 0 4px 0 var(--border-color); transition: all 0.2s ease; 
+        }
+        nav ul li button:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--border-color); }
+        nav ul li button.active { background: var(--purple-pastel); transform: translateY(2px); box-shadow: 0 2px 0 var(--border-color); }
+
+        /* SPA Layout Router */
+        .page { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; padding: 40px 5%; }
+        .page.active-page { display: block; opacity: 1; transform: translateY(0); }
+
+        /* Main Elements */
+        .hero { max-width: 850px; margin: 40px auto 20px auto; text-align: center; }
+        .hero h1 { font-size: 42px; line-height: 1.3; margin-bottom: 20px; }
+        .hero p { color: var(--text-muted); font-size: 17px; max-width: 650px; margin: 0 auto 30px auto; font-weight: 500; }
+        
+        .pastel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 1000px; margin: 40px auto 0 auto; }
+        .pastel-box { 
+            background: var(--white); padding: 35px; border-radius: 24px; 
+            border: 3px solid var(--border-color); box-shadow: 0 8px 0 var(--border-color); transition: all 0.2s ease;
+        }
+        .pastel-box:hover { transform: translateY(-4px); box-shadow: 0 12px 0 var(--border-color); }
+        .pastel-box.full-width { grid-column: span 2; }
+        .window-dots { display: flex; gap: 6px; margin-bottom: 15px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--border-color); }
+
+        /* Video Theater */
+        .theater { max-width: 750px; margin: 0 auto 30px auto; background: #000; border-radius: 24px; overflow: hidden; border: 3px solid var(--border-color); box-shadow: 0 8px 0 var(--border-color); }
+        video { width: 100%; display: block; }
+        
+        /* Interactive Form Elements */
+        .sandbox-area { max-width: 600px; margin: 0 auto; }
+        textarea { 
+            width: 100%; height: 110px; background: var(--white); border: 3px solid var(--border-color); 
+            border-radius: 20px; padding: 20px; color: var(--text-dark); font-size: 16px; font-weight: 600; resize: none; outline: none; margin-bottom: 15px;
+        }
+        .send-btn { 
+            background: var(--pink-pastel); color: var(--text-dark); padding: 14px; border-radius: 20px; 
+            border: 3px solid var(--border-color); width: 100%; font-weight: 700; font-size: 16px; cursor: pointer; box-shadow: 0 5px 0 var(--border-color); margin-bottom: 10px;
+        }
+        .report-box { margin-top: 25px; padding: 20px; border-radius: 20px; border: 3px solid var(--border-color); display: none; background: var(--white); }
+
+        /* Quiz Layout */
+        .quiz-option { display: block; background: var(--white); border: 2px solid var(--border-color); padding: 12px 20px; border-radius: 15px; margin-bottom: 10px; cursor: pointer; font-weight: 600; text-align: left; transition: 0.2s; width: 100%; }
+        .quiz-option:hover { background: var(--yellow-pastel); }
+
+        /* Polling Layout Elements */
+        .poll-option-wrapper { margin-bottom: 18px; text-align: left; }
+        .poll-btn { background: var(--white); border: 2px solid var(--border-color); padding: 10px 20px; border-radius: 15px; width: 100%; text-align: left; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .poll-btn:hover { background: var(--blue-pastel); }
+        .poll-bar-container { background: #e0e0e0; border-radius: 10px; height: 14px; width: 100%; margin-top: 6px; display: none; overflow: hidden; border: 1px solid var(--border-color); }
+        .poll-bar { height: 100%; background: var(--mint); width: 0%; transition: width 0.6s ease; }
+        .poll-percent { font-size: 13px; font-weight: 700; color: var(--text-muted); margin-top: 2px; display: none; }
+
+        /* Tables & Lists */
+        .materi-list { margin-top: 15px; padding-left: 20px; }
+        .materi-list li { margin-bottom: 12px; font-weight: 500; line-height: 1.6; }
+
+        .materi-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .materi-table th, .materi-table td { border: 2px solid var(--border-color); padding: 12px; text-align: left; font-weight: 500; }
+        .materi-table th { background: var(--purple-pastel); font-family: 'Fredoka', sans-serif; }
+        .materi-table td { background: var(--white); line-height: 1.6; }
+
+        footer { text-align: center; margin-top: 80px; padding: 30px; border-top: 2px dashed var(--border-color); color: var(--text-muted); font-size: 14px; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">🧸 Suara<span>Empati</span></div>
+        <ul>
+            <li><button onclick="changeTab('home', this)" class="tab-btn active">Home</button></li>
+            <li><button onclick="changeTab('fenomena', this)" class="tab-btn">Fenomena Sosial</button></li>
+            <li><button onclick="changeTab('nilai', this)" class="tab-btn">Nilai Moral & Etika</button></li>
+            <li><button onclick="changeTab('interaktif', this)" class="tab-btn">Media Interaktif</button></li>
+            <li><button onclick="changeTab('kesimpulan', this)" class="tab-btn">Kesimpulan</button></li>
+        </ul>
+    </nav>
+
+    <div id="home" class="page active-page">
+        <header class="hero">
+            <h1>Pancasila sebagai Nilai Moral dan Etika di Era Modern 🌸</h1>
+            <p>Platform riset kolektif kemanusiaan untuk mengevaluasi kesantunan sosial harian, menumbuhkan kepekaan nurani, serta meregenerasi kepribadian luhur bangsa di tengah kuatnya arus gaya hidup digital.</p>
+        </header>
+
+        <section class="pastel-grid">
+            <div class="pastel-box" style="background: var(--yellow-pastel);">
+                <div class="window-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                <h3>Prinsip Kemanusiaan yang Beradab ✨</h3>
+                <p style="margin-top: 10px; font-weight: 500; line-height: 1.7;">Materi etika dasar bangsa mengajarkan bahwa esensi utama dari masyarakat yang maju dan bermartabat diletakkan pada kemampuannya dalam memanusiakan manusia lain secara adekuat dalam realitas kehidupan nyata. Di tengah perkembangan teknologi informasi yang masif, integritas kepribadian kita diuji untuk tidak membiarkan perangkat siber mengikis kepekaan nurani, tenggang rasa, kesantunan bertindak, serta kepedulian tulus terhadap sesama warga sosial di lingkar terdekat kita.</p>
+            </div>
+            
+            <div class="pastel-box" style="background: var(--mint);">
+                <h3>Etika Kehadiran Fisik & Kepedulian Nyata 🌐</h3>
+                <p style="margin-top: 10px; font-weight: 500; line-height: 1.7;">Memiliki keluhuran moral berarti memiliki kesadaran penuh terhadap situasi lingkungan sekitar. Tindakan memberikan perhatian utuh kepada sahabat yang sedang berbicara langsung di hadapan kita, serta kepekaan refleks untuk segera mengulurkan tangan ketika menyaksikan sesama mengalami kesusahan fisik, merupakan cerminan dari karakter masyarakat yang sehat, responsif, dan bertanggung jawab moral.</p>
+            </div>
+        </section>
+    </div>
+
+    <div id="fenomena" class="page">
+        <div class="hero" style="margin-bottom: 30px;">
+            <h1>Eksplorasi Reka Adegan Kasus Nyata 🎬</h1>
+            <p>Visualisasi kritis mengenai perbandingan langsung antara perilaku pengabaian sosial (tindakan tidak bermoral) dengan komitmen kepedulian sosial (tindakan etis) di ruang publik.</p>
+        </div>
+        
+        <div class="theater">
+            <video controls poster="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200">
+                <source src="assets/tugas_pancasila.mp4" type="video/mp4">
+                Browser kamu tidak mendukung pemutaran video HTML5.
+            </video>
+        </div>
+
+        <div class="pastel-grid">
+            <div class="pastel-box" style="background: var(--pink-pastel);">
+                <h3>Kasus 1: Respons Spontan Terhadap Musibah Fisik</h3>
+                <p style="font-weight: 500; margin-top: 10px; line-height: 1.7;">Menyoroti kontras perilaku refleks di ruang sosial terbuka harian saat ada orang sekitar yang tertimpa musibah kecil di area kampus. Perilaku buruk digambarkan lewat tindakan sengaja bersikap acuh tak acuh, menutup mata, dan memalingkan pandangan ketika melihat seorang kawan mendadak terjatuh hingga seluruh barang bawaannya (seperti buku dan berkas kuliah) berantakan berserakan di lantai. Sikap abai murni ini menunjukkan matinya kepekaan spontan terhadap kondisi darurat sesama.</p>
+                <p style="font-weight: 500; margin-top: 10px; line-height: 1.7;">Sebaliknya, sifat baik ditunjukkan melalui kesadaran moral yang responsif, proaktif, dan beradab, di mana individu langsung memprioritaskan rasa empati dengan bergegas menghampiri, menolongnya bangkit berdiri, serta ikut memunguti barang-barang yang terjatuh tanpa rasa ragu.</p>
+            </div>
+
+            <div class="pastel-box" style="background: var(--yellow-pastel);">
+                <h3>Kasus 2: Dinamika Komunikasi Tatap Muka</h3>
+                <p style="font-weight: 500; margin-top: 10px; line-height: 1.7;">Menyoroti geseran etika kesantunan dalam hubungan interpersonal harian akibat distraksi gawai. Sifat buruk digambarkan lewat tindakan pengabaian kawan yang sedang berbicara langsung di depan mata karena atensi psikologisnya terserap penuh oleh layar ponsel (*phubbing*). Sikap egois digital ini melukai perasaan lawan bicara karena mengabaikan haknya untuk dihargai.</p>
+                <p style="font-weight: 500; margin-top: 10px; line-height: 1.7;">Kondisi negatif ini dikontraskan dengan perilaku bermoral positif, di mana individu secara sadar memilih menurunkan ponsel, memberikan kontak mata penuh, serta mendengarkan seluruh pemaparan obrolan teman dengan tulus sebagai bentuk penghormatan beradab yang nyata.</p>
+            </div>
+            
+            <div class="pastel-box full-width" style="background: var(--blue-pastel);">
+                <h3>Ulasan Dampak Sosial Terhadap Ekosistem Kebersamaan 📉</h3>
+                <p style="font-weight: 500; line-height: 1.7;">Ketika perilaku abai, acuh, dan pengabaian interpersonal dianggap sebagai hal lumrah yang biasa terjadi, kualitas tatanan hubungan bersama akan mengalami keretakan organik. Dampak sosialnya memicu lahirnya rasa ketidakpercayaan antar-sesama, menumbuhkan lingkungan yang individualis, dingin, serta melunturkan kehangatan ikatan kekeluargaan asli masyarakat di dunia nyata. Individu dalam kelompok akan merasa terasing meskipun secara fisik berada di tempat yang sama.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="nilai" class="page">
+        <div class="hero">
+            <h1>Kajian Filosofi Etika Kemanusiaan Luhur 🧠</h1>
+            <p>Matriks evaluasi mendalam membedah hakikat adab, kesetaraan hak, dan derajat manusia berdasarkan pembumian sistem moral kebangsaan.</p>
+        </div>
+        
+        <div class="pastel-box full-width" style="margin-top: 30px;">
+            <div class="window-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+            <h3>Matriks Penegakan Harkat, Martabat, dan Adab Manusia</h3>
+            <table class="materi-table">
+                <thead>
+                    <tr>
+                        <th>Kajian Etika Sosial</th>
+                        <th>Bentuk Degradasi Nilai Kemanusiaan</th>
+                        <th>Sikap yang Memenuhi Standar Adab</th>
+                        <th>Refleksi Aktualisasi Nilai Luhur Bangsa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Sikap terhadap Sesama yang Mengalami Kemalangan</strong></td>
+                        <td>Membiarkan sesama mengalami kesulitan fisik di depan mata tanpa ada dorongan hati untuk mengulurkan bantuan.</td>
+                        <td>Secara spontan memberikan pertolongan nyata sebagai perwujudan pengakuan atas nilai empati fisik harian.</td>
+                        <td>Mengaktualisasikan prinsip bahwa setiap insan memiliki kewajiban moral untuk memperlakukan manusia lain secara adil, beradab, dan penuh welas asih.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pengakuan Eksistensi dalam Interaksi Tatap Muka</strong></td>
+                        <td>Mengabaikan martabat rekan bicara demi kesenangan siber sepihak (tindakan tidak beradab di ruang sosial).</td>
+                        <td>Menunjukkan tata krama, tenggang rasa, serta kesediaan mendengarkan sebagai wujud penghormatan subjek.</td>
+                        <td>Menjunjung tinggi kesetaraan derajat manusia, di mana hak individu untuk dihargai tidak boleh tergerus oleh distraksi teknologi.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pastel-grid" style="margin-top: 40px;">
+            <div class="pastel-box" style="background: var(--purple-pastel);">
+                <h3>Etika Keautamaan: Mengakui Harkat & Martabat Sesama 🌸</h3>
+                <p style="font-weight: 500; line-height: 1.7; font-size: 14px;">Sistem etika sosial bangsa kita menuntut individu untuk menumbuhkan sikap tenggang rasa (*tepaslira*) dan tidak semena-mena terhadap orang lain. Menghargai teman bicara dengan memberikan perhatian utuh merupakan bentuk konkret dari pengakuan terhadap harkat dan martabat manusia. Mengembangkan sikap saling mencintai sesama makhluk hidup adalah fondasi utama dari masyarakat yang menjunjung tinggi keadaban di era modern.</p>
+            </div>
+            
+            <div class="pastel-box" style="background: var(--mint);">
+                <h3>Etika Deontologi: Kewajiban Memanusiakan Manusia 🌿</h3>
+                <p style="font-weight: 500; line-height: 1.7; font-size: 14px;">Dalam ranah deontologi, menolong orang yang sedang terjatuh dan mengalami kesusahan adalah perintah moral yang wajib dilakukan tanpa syarat. Sikap proaktif ini lahir dari kesadaran bahwa kita semua adalah makhluk sosial yang setara. Melatih kepekaan refleks untuk gemar melakukan kegiatan kemanusiaan merupakan bukti nyata bahwa moralitas kita tidak tumpul dan selalu siap memanusiakan sesama di dunia nyata.</p>
+            </div>
+
+            <div class="pastel-box full-width" style="background: var(--white);">
+                <h3>Refleksi Karakter: Mengganti Simpati Virtual dengan Empati Riil 🌱</h3>
+                <p style="font-weight: 500; line-height: 1.7;">Kebiasaan di era siber modern kerap menjebak kita ke dalam batas kenyamanan simpati virtual semata. Kita cenderung merasa sudah peduli hanya dengan memberikan tanda suka atau mengetik untaian kata prihatin di balik layar monitor. Namun, jati diri moralitas bangsa yang sesungguhnya menuntut tindakan fisik yang konkret, kerelaan meluangkan waktu secara spontan untuk lingkungan sekitar, serta kesiapan penuh membela kebenaran adab demi kenyamanan sesama manusia.</p>
+                <p style="font-weight: 500; line-height: 1.7; margin-top: 10px;">Mengabaikan orang yang berada langsung di hadapan kita demi sebuah interaksi semu di layar digital adalah bentuk kemunduran perilaku beradab. Karakter yang luhur tidak dinilai dari seberapa aktif kita berinteraksi di dunia digital, melainkan seberapa tinggi tata krama, kesantunan, dan rasa kemanusiaan yang kita tunjukkan dalam memperlakukan sesama manusia di kehidupan nyata.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="interaktif" class="page" style="text-align: center;">
+        <div class="hero">
+            <h1>Interactive Assessment & Polling Hub 🎮</h1>
+            <p>Gunakan tiga instrumen modul interaktif di bawah ini untuk menguji, merefleksikan, serta menyuarakan pandangan etika sosialmu.</p>
+        </div>
+
+        <div class="pastel-grid">
+            <div class="pastel-box" style="text-align: left;">
+                <div class="window-dots"><div class="dot" style="background:var(--pink-pastel);"></div><div class="dot" style="background:var(--mint);"></div><div class="dot" style="background:var(--yellow-pastel);"></div></div>
+                <h3>1. Pemindai Semantik Etika Sosial</h3>
+                <p style="font-size:13px; color:var(--text-muted); margin-bottom:15px;">Ketik respon spontan Anda saat menyaksikan problem sosial atau teman kesusahan sekitar:</p>
+                <textarea id="pastelInput" placeholder="Tuliskan tanggapan Anda di sini... (Contoh: Bodo amat, cuek, atau langsung menolong)"></textarea>
+                <button class="send-btn" onclick="testPastelScanner()">Jalankan Pemindai</button>
+                
+                <div class="report-box" id="pastelReport">
+                    <h4 id="reportTitle" style="margin-bottom: 5px;"></h4>
+                    <p id="reportContent" style="font-size: 14px; font-weight: 500;"></p>
+                </div>
+            </div>
+
+            <div class="pastel-box" style="text-align: left; background: var(--purple-pastel);">
+                <h3>2. Kuis Indeks Tenggang Rasa</h3>
+                <p style="font-size:13px; color:var(--text-dark); margin-bottom:15px;">Apa tindakan pertama Anda ketika melihat seorang sahabat terpeleset jatuh dan seluruh buku bawaannya berserakan tepat di hadapan Anda?</p>
+                
+                <div id="quizContainer">
+                    <button class="quiz-option" onclick="submitQuiz(1)">A. Memalingkan wajah, pura-pura tidak melihat, dan terus melangkah pergi.</button>
+                    <button class="quiz-option" onclick="submitQuiz(2)">B. Segera menghampiri untuk membantunya merapikan barang bawaan dan berdiri.</button>
+                    <button class="quiz-option" onclick="submitQuiz(3)">C. Meraih ponsel di saku celana untuk merekam momen tersebut demi konsumsi konten internet.</button>
+                </div>
+                
+                <div class="report-box" id="quizReport" style="display:none; background:var(--white);">
+                    <h4 style="color:var(--text-dark); margin-bottom:5px;">Hasil Analisis Keluhuran Budaya:</h4>
+                    <p id="quizContent" style="font-size: 14px; font-weight: 500;"></p>
+                </div>
+            </div>
+
+            <div class="pastel-box full-width" style="text-align: left; background: var(--blue-pastel);">
+                <h3>3. Jajak Pendapat: Krisis Etika Terdekat 📊</h3>
+                <p style="font-size:14px; color:var(--text-dark); margin-bottom:20px;">Menurut pandanganmu, mana perilaku pengabaian adab digital yang paling sering merusak keharmonisan pertemanan di lingkungan sekitar hari ini?</p>
+                
+                <div id="pollContainer">
+                    <div class="poll-option-wrapper">
+                        <button class="poll-btn" onclick="castVote('phubbing')">📱 Fenomena Phubbing (Sibuk main HP saat mengobrol bersama teman)</button>
+                        <div class="poll-bar-container" id="bar-phubbing"><div class="poll-bar" style="background:var(--pink-pastel);"></div></div>
+                        <p class="poll-percent" id="pct-phubbing">0% memilih ini</p>
+                    </div>
+                    <div class="poll-option-wrapper">
+                        <button class="poll-btn" onclick="castVote('apatis')">🚷 Sikap Apatis Spontan (Acuh saat melihat kawan tertimpa musibah fisik)</button>
+                        <div class="poll-bar-container" id="bar-apatis"><div class="poll-bar" style="background:var(--purple-pastel);"></div></div>
+                        <p class="poll-percent" id="pct-apatis">0% memilih ini</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="kesimpulan" class="page">
+        <div class="hero" style="margin-top: 20px;">
+            <div class="pastel-box" style="padding: 50px; max-width: 750px; margin: 0 auto; background: var(--blue-pastel);">
+                <h2 style="font-size: 24px; font-style: italic; margin-bottom: 25px; line-height: 1.5; font-family:'Fredoka';">
+                    "Tidak semua perilaku buruk memiliki sanksi hukum, tetapi setiap tindakan tetap memiliki nilai moral dan dampak kemanusiaan."
+                </h2>
+                <p style="font-weight: 600; color: var(--text-dark); font-size: 15px; line-height: 1.7;">
+                    <strong>Pesan Moral & Ajakan Perubahan Sikap Bersama:</strong> Sebuah perangkat teknologi diciptakan hanyalah sebagai instrumen bantu sirkulasi data, namun nilai derajat kemanusiaan harian kita ditentukan sepenuhnya dari bagaimana cara nyata kita memperlakukan manusia lain di sekeliling. Mari kurangi kebiasaan abai digital, turunkan pandangan dari ponsel saat teman berbicara, serta ringankan langkah kaki untuk sigap menolong sesama yang terjatuh demi terwujudnya tatanan sosial harian yang beradab, humanis, dan berkarakter kebangsaan.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Suara Empati Platform &copy; 2026. Dikembangkan sebagai wadah independen penegakan ekosistem kemanusiaan publik berlandaskan filosofi kebangsaan.</p>
+    </footer>
+
+    <script>
+        function changeTab(tabName, buttonElement) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active-page'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.add('active-page');
+            buttonElement.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function testPastelScanner() {
+            let txt = document.getElementById('pastelInput').value.toLowerCase();
+            let rBox = document.getElementById('pastelReport');
+            let rTitle = document.getElementById('reportTitle');
+            let rContent = document.getElementById('reportContent');
+            
+            if(!txt.trim()) { alert("Input analisis respon tidak boleh kosong."); return; }
+            
+            rBox.style.display = "block";
+            
+            let toxicList = ["bodo amat", "cuek", "biarin", "bukan urusan", "ga peduli", "terserah", "asing"];
+            let hit = toxicList.some(w => txt.includes(w));
+            
+            if(hit) {
+                rBox.style.backgroundColor = "#ffc4d6"; 
+                rTitle.innerHTML = "🚨 Sistem: Deviasi Etika Karakter";
+                rContent.innerHTML = "Struktur bahasa mendeteksi adanya indikasi sikap apatis yang kurang selaras dengan nilai tenggang rasa kebangsaan harian. Yuk, latih kembali kepekaan moral sosialmu di kehidupan nyata!";
+            } else {
+                rBox.style.backgroundColor = "#b9f2e1"; 
+                rTitle.innerHTML = "✨ Sistem: Refleksi Nilai Luhur Bangsa";
+                rContent.innerHTML = "Respon Anda tervalidasi selaras dengan prinsip moral kemanusiaan yang beradab dan berbudaya luhur. Kesadaran proaktif harian ini merupakan wujud nyata kepedulian sosial yang sehat.";
+            }
+        }
+
+        function submitQuiz(option) {
+            let qBox = document.getElementById('quizReport');
+            let qContent = document.getElementById('quizContent');
+            qBox.style.display = "block";
+            
+            if(option === 1) {
+                qContent.innerHTML = "<strong>Evaluasi Karakter Bangsa:</strong> Pilihan ini merepresentasikan sikap acuh murni yang melanggar nilai kesopanan, kesantunan harian, serta mematikan refleks tenggang rasa dasar sesama manusia.";
+            } else if(option === 2) {
+                qContent.innerHTML = "<strong>Evaluasi Karakter Bangsa:</strong> Sangat Sempurna! Tindakan proaktif harian ini mencerminkan keluhuran moral kemanusiaan sejati yang sigap melakukan aksi gotong royong menolong sesama sekaligus membantu merapikan barangnya tanpa pamrih.";
+            } else {
+                qContent.innerHTML = "<strong>Evaluasi Karakter Bangsa:</strong> Pilihan ini mengindikasikan degradasi moral siber harian, di mana kedaruratan fisik sesama di dunia nyata secara tidak beradab hanya dinilai demi kepentingan komoditas konten digital harian.";
+            }
+        }
+
+        // LOGIKA BARU: INTERACTIVE REAL-TIME POLLING SYSTEM
+        function castVote(type) {
+            // Simulasi database data persentase voting
+            let data = { phubbing: 64, apatis: 36 };
+            
+            document.getElementById('bar-phubbing').style.display = "block";
+            document.getElementById('bar-apatis').style.display = "block";
+            document.getElementById('pct-phubbing').style.display = "block";
+            document.getElementById('pct-apatis').style.display = "block";
+            
+            document.querySelector('#bar-phubbing .poll-bar').style.width = data.phubbing + "%";
+            document.querySelector('#bar-apatis .poll-bar').style.width = data.apatis + "%";
+            
+            document.getElementById('pct-phubbing').innerHTML = "📊 " + data.phubbing + "% pengunjung setuju ini paling krusial";
+            document.getElementById('pct-apatis').innerHTML = "📊 " + data.apatis + "% pengunjung setuju ini paling krusial";
+            
+            alert("Terima kasih atas aspirasimu! Suaramu sangat berharga untuk menegakkan adab bersama. 🌟");
+        }
+    </script>
+</body>
+</html>
